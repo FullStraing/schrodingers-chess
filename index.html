@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Schrödinger's Chess</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif:ital@1&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/ui/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="masthead-text">
+      <h1>Schrödinger's Chess<span class="star">✳</span></h1>
+      <p class="deck">The pieces forget how they move. Your opponent was never told how they move either.</p>
+    </div>
+    <div class="masthead-aside">
+      <p class="boast">32 pieces. <em>0 instructions.</em></p>
+      <p class="boast">It learns them while you play.</p>
+      <p class="micro">Chess, with a serious identity problem</p>
+      <div class="seed-box">
+        <label for="seed">Seed</label>
+        <input id="seed" type="text" spellcheck="false" autocomplete="off">
+      </div>
+    </div>
+  </header>
+
+  <div class="table">
+    <!-- ================= left: the contenders ================= -->
+    <div class="rail">
+      <p class="rail-label">The contenders</p>
+
+      <section class="card player" id="cardW">
+        <div class="player-top">
+          <span class="player-chip w">♟</span>
+          <div class="player-meta">
+            <span class="player-slot">Player 01</span>
+            <span class="player-name">White</span>
+          </div>
+          <span class="tag" id="tagW">You</span>
+        </div>
+        <div class="player-score">
+          <span class="big" id="scoreW">0</span>
+          <span class="unit">pieces<br>taken</span>
+        </div>
+        <div class="meter"><span id="meterW" style="width:0%"></span></div>
+        <div class="player-foot"><span id="footW">No captures. Yet.</span><span class="pcs" id="pcsW"></span></div>
+      </section>
+
+      <section class="card player" id="cardB">
+        <div class="player-top">
+          <span class="player-chip b">♟</span>
+          <div class="player-meta">
+            <span class="player-slot">Player 02</span>
+            <span class="player-name">Black</span>
+          </div>
+          <span class="tag ai" id="tagB">Machine</span>
+        </div>
+        <div class="player-score">
+          <span class="big" id="scoreB">0</span>
+          <span class="unit">pieces<br>taken</span>
+        </div>
+        <div class="meter"><span id="meterB" style="width:0%"></span></div>
+        <div class="player-foot"><span id="footB">No captures. Yet.</span><span class="pcs" id="pcsB"></span></div>
+      </section>
+
+      <section class="card">
+        <div class="flavour">
+          <span class="ic">◈</span>
+          <p><b>Everyone is a suspect.</b> One secret piece on each side. Take theirs and you win on the spot. Hope they don't take yours first.</p>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="peekBtn" type="button">Peek at mine</button>
+          <button class="btn" id="beliefBtn" type="button" aria-pressed="false">Its suspicions</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="rule-block">
+          <span class="n">House rule #01</span>
+          <p>Forget everything you know about chess.<span class="sig">Seriously.</span></p>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="rulesBtn" type="button">Rules</button>
+          <button class="btn" id="newBtn" type="button">New game</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= centre: the board ================= -->
+    <div class="stage">
+      <div class="stage-bar">
+        <span class="stage-status"><span class="pulse"></span><span id="statusLine">Waiting to begin</span></span>
+        <span class="stage-turn" id="turnCount">Turn 00</span>
+      </div>
+
+      <div class="board-shell">
+        <div class="board-frame">
+          <div class="files" id="filesTop"></div>
+          <div class="ranks" id="ranksL"></div>
+          <div class="board" id="board" role="grid" aria-label="Chess board"></div>
+          <div class="ranks" id="ranksR"></div>
+          <div class="files" id="filesBot"></div>
+        </div>
+      </div>
+
+      <div class="stage-foot">
+        <span class="hint"><span class="ic">⚡</span><span id="moveNote">Select a piece. Take a guess.</span></span>
+        <span class="cold"><span class="kbd">click</span> move <span class="kbd">esc</span> deselect · no hints, no mercy</span>
+      </div>
+    </div>
+
+    <!-- ================= right: the opponent ================= -->
+    <div class="rail">
+      <section class="card lit">
+        <div class="card-head">
+          <h2 class="card-title"><span class="ic">✦</span> Your unqualified opponent</h2>
+        </div>
+        <div class="ego-top">
+          <span class="ego-face" id="egoFace">🫠</span>
+          <div class="ego-id">
+            <span class="ego-name">EGO <span class="tag">v0.1</span></span>
+            <span class="ego-state"><span class="dot-i"></span><span id="egoState">Booting · knows nothing</span></span>
+          </div>
+        </div>
+        <div class="meters" id="meters"></div>
+        <div class="quips" id="quips"></div>
+        <div class="ego-foot"><span class="dot-i"></span><span id="egoFoot">Learning the hard way</span></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title"><span class="ic">✳</span> Chaos log</h2>
+          <span class="live"><span class="dot-i"></span>Live</span>
+        </div>
+        <p class="card-sub">A record of questionable decisions.</p>
+        <ul class="chaos" id="chaos"></ul>
+        <div class="chaos-foot"><span class="dot-i"></span>Bad moves make good stories.</div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ================= bottom: the learning dashboard ================= -->
+  <section class="notebook">
+    <div class="notebook-head">
+      <h2>The machine's <em>notebook</em></h2>
+      <p>Everything below is the opponent working out the rules in real time, from what it watched you do and what it was refused. It started the game knowing nothing at all.</p>
+    </div>
+
+    <div class="notebook-grid">
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">What it thinks the pieces do</h2>
+          <span class="card-sub" id="masksNote">0 observations</span>
+        </div>
+        <p class="card-sub">One panel per movement type: every displacement from the centre square, forward pointing up. Flat means it has no idea yet.</p>
+        <div class="masks" id="masks"></div>
+        <div class="legend"><span>illegal</span><span class="bar"></span><span>legal</span></div>
+      </section>
+
+      <div class="rail">
+        <section class="card">
+          <div class="card-head">
+            <h2 class="card-title">Learning curve</h2>
+            <span class="card-sub" id="curveNote">—</span>
+          </div>
+          <canvas class="chart" id="curve"></canvas>
+          <p class="card-sub">Scored each move on a fresh balanced sample, so knowing nothing is 50%.</p>
+        </section>
+        <section class="card">
+          <p class="card-title">Engine</p>
+          <dl class="stats" id="stats"></dl>
+        </section>
+      </div>
+
+      <div class="rail">
+        <section class="card">
+          <div class="card-head">
+            <h2 class="card-title">Which piece is yours</h2>
+            <span class="card-sub" id="beliefNote">4.00 bits</span>
+          </div>
+          <div class="bars" id="beliefBars"></div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h2 class="card-title">What it thinks wins</h2>
+            <span class="card-sub" id="objNote">no evidence yet</span>
+          </div>
+          <div class="bars" id="objBars"></div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <p class="card-title">Experiments</p>
+            <span class="card-sub">predicted → actual</span>
+          </div>
+          <ul class="feed" id="feed"></ul>
+        </section>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="overlay" id="introOv"><div class="panel">
+  <p class="verdict">Impractical Inventions · Patent Pending</p>
+  <h2>Schrödinger's Chess</h2>
+  <p class="lede">A chess set whose pieces cannot remember what they are, played against an opponent who never got the rulebook.</p>
+  <ul class="rules-list">
+    <li>Every turn, <b>each of that player's pieces is randomly reassigned a way of moving</b>. A piece keeps its face but not its habits.</li>
+    <li><b>No check, no checkmate.</b> The king is an ordinary piece.</li>
+    <li>You each have one <b>secret piece</b>. Capture the other side's and you win instantly.</li>
+    <li>EGO starts knowing <b>nothing</b> — not how pieces move, not what wins. The notebook at the bottom of the page is it figuring that out while you play.</li>
+  </ul>
+  <button class="btn primary" id="beginBtn" type="button">Deal the secrets</button>
+</div></div>
+
+<div class="overlay" id="curtainOv"><div class="panel" id="curtainPanel"></div></div>
+
+<div class="overlay" id="rulesOv"><div class="panel">
+  <h2>How this works</h2>
+  <ul class="rules-list">
+    <li><b>Every turn is a fresh roll.</b> The badge on a piece is what it moves as this turn.</li>
+    <li><b>Pawn</b> one square forward, captures diagonally forward, no double step. <b>Knight</b> jumps. <b>Bishop</b>, <b>rook</b>, <b>queen</b> slide and can be blocked. <b>King</b> steps one square.</li>
+    <li><b>No check, no checkmate.</b> Taking the king wins nothing.</li>
+    <li><b>Promotion</b> applies to anything that still looks like a pawn, whatever it moved as to get there.</li>
+    <li><b>You win</b> by capturing the opponent's secret piece — and you won't know you've done it until you have.</li>
+    <li>EGO gets a handful of yes/no questions per turn: "may I move this there?" It learns from the refusals as much as the permissions.</li>
+  </ul>
+  <button class="btn primary" id="rulesClose" type="button">Back to the game</button>
+</div></div>
+
+<div class="overlay" id="overOv"><div class="panel" id="overPanel"></div></div>
+
+<script type="module" src="src/ui/app.js"></script>
+</body>
+</html>
