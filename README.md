@@ -128,7 +128,7 @@ src/agent/     the learner. Does NOT import src/core/rules.js
   agent.js            the three layers plus a turn
 src/eval/      instrumentation. Allowed to see ground truth; the agent is not
 src/ui/        board, masks, curve, panels
-test/          experiments and the end-to-end UI run
+test/          experiments, the end-to-end UI run, and unit tests for the core
 ```
 
 The one-directional import graph is the point: `src/agent/` cannot reach
