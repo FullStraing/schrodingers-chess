@@ -1,6 +1,6 @@
 // Everything, in one command: node test/run.js
 import { execFileSync } from 'child_process';
-const suites = ['unit.js', 'rules.js', 'architecture.js', 'convergence.js', 'probe-strategy.js', 'active-learning.js', 'ui-smoke.js'];
+const suites = ['unit.js', 'rules.js', 'game.js', 'architecture.js', 'convergence.js', 'probe-strategy.js', 'active-learning.js', 'ui-smoke.js'];
 let failed = 0;
 for (const s of suites) {
   console.log('\n' + '='.repeat(66) + '\n' + s + '\n' + '='.repeat(66));
